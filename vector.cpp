@@ -90,7 +90,7 @@ inline vec3 cross(const vec3 &v1, const vec3 &v2) {
 }
 
 inline vec3 unit_vector(vec3 v) {
-    return operator/(v, v.magnitude());
+    return operator/(v, v.get_magnitude());
 }
 
 inline std::istream& operator>>(std::istream &is, vec3 &t) {
