@@ -15,13 +15,13 @@ vec3 random_in_unit_disk() {
 class camera {
     public:
         camera(vec3 look_from, vec3 look_at, vec3 view_up, float v_fov, float aspect, float aperture, float focus_dist) {
-            //Defocus blur var
+            // Defocus blur var
             lens_radius = aperture / 2.0;
-            //FOV var
+            // FOV var
             float theta = v_fov * M_PI / 180;
             float half_height = tan(theta / 2);
             float half_width = aspect * half_height;
-            //Viewpoint var
+            // Viewpoint var
             origin = look_from;
             w = unit_vector(operator-(look_from, look_at));
             u = unit_vector(cross(view_up, w));
