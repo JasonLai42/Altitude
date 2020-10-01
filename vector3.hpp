@@ -12,15 +12,10 @@ class vec3 {
         vec3() : e{0, 0, 0} {}
         vec3(double e0, double e1, double e2) : e{e0, e1, e2} {}
 
-        // Position
+        // Components; alternatively r g b for color
         double get_x() const { return e[0]; }
         double get_y() const { return e[1]; }
         double get_z() const { return e[2]; }
-        
-        // Color
-        double get_r() const { return e[0]; }
-        double get_g() const { return e[1]; }
-        double get_b() const { return e[2]; }
 
         inline const vec3& operator+() const { return *this; }
         inline vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
