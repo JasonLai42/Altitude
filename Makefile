@@ -5,7 +5,7 @@ CXXFLAGS = -std=c++11 -O2 -Wall -g
 ALTITUDE_OBJ = altitude.o
 
 #submission = 204995126.tar.gz
-header_files = constants.hpp vector3.hpp color.hpp #ray.hpp entity.hpp sphere.hpp entity_list.hpp camera.hpp
+header_files = constants.hpp vector3.hpp color.hpp ray.hpp #entity.hpp sphere.hpp entity_list.hpp camera.hpp
 #submission_files = client.cpp server.cpp $(header_files) Makefile README
 
 default: altitude
@@ -13,7 +13,7 @@ default: altitude
 altitude: $(ALTITUDE_OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-altitude.o: altitude.cpp constants.hpp vector3.hpp color.hpp #ray.hpp sphere.hpp entity_list.hpp camera.hpp
+altitude.o: altitude.cpp constants.hpp vector3.hpp color.hpp ray.hpp #sphere.hpp entity_list.hpp camera.hpp
 	$(CXX) $(CXXFLAGS) -c altitude.cpp
 
 #dist:

@@ -3,6 +3,7 @@
 
 #include "vector3.hpp"
 
+
 class ray {
     public:
         ray() {}
