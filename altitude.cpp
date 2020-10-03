@@ -1,12 +1,22 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <random>
 
 #include "constants.hpp"
+#include "camera.hpp"
 #include "color.hpp"
 #include "entity_list.hpp"
 #include "sphere.hpp"
 
+
+// RNG for real number >= 0 and < 1
+inline double random_double() {
+    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    static std::mt19937 generator;
+    
+    return distribution(generator);
+}
 
 color3 ray_color(const ray& r, const entity& world) {
     hit_record rec;
@@ -45,33 +55,27 @@ int main(int argc, char* argv[]) {
 
 
     /* CAMERA */
-    auto origin = point3(0, 0, 0);
-    auto horizontal = vec3(VWPORT_WIDTH, 0, 0);
-    auto vertical = vec3(0, VWPORT_HEIGHT, 0);
-    auto lower_left_corner = operator-(
-                                    operator-(
-                                        operator-(origin, operator/(horizontal, 2)), 
-                                                                operator/(vertical, 2)),  
-                                                                    vec3(0, 0, FOCAL_LENGTH));
+    camera cam;
 
 
-    /* WRITE TO FILE IN PPM FORMAT */
+    /* RENDER; WRITE TO FILE IN PPM FORMAT */
     out_file << "P3\n" << IMG_WIDTH << " " << IMG_HEIGHT << "\n255\n";
 
     for(int i = IMG_HEIGHT - 1; i >= 0; i--) {
         // Progress Indicator
         std::cerr << "\rScanlines remaining: " << i << ' ' << std::flush;
         for(int j = 0; j < IMG_WIDTH; j++) {
-            auto u = double(j) / (IMG_WIDTH - 1);
-            auto v = double(i) / (IMG_HEIGHT - 1);
-            ray r(origin, operator-(
-                                operator+(
-                                        operator+(lower_left_corner, operator*(horizontal, u)), 
-                                                                            operator*(vertical, v)), 
-                                                                                origin));
-            color3 pixel_color = ray_color(r, world);
+            color3 pixel_color(0, 0, 0);
+            // Anti-aliasing; get n samples in each pixel
+            for(int s = 0; s < AA_SAMPLE; s++) {
+                auto u = (j + random_double()) / (IMG_WIDTH - 1);
+                auto v = (i + random_double()) / (IMG_HEIGHT - 1);
+                // Get the ray from camera to those UV coordinates
+                ray r = cam.get_ray(u, v);
+                pixel_color = operator+(pixel_color, ray_color(r, world));
+            }
             
-            write_color(out_file, pixel_color);
+            write_color(out_file, pixel_color, AA_SAMPLE);
         }
     }
     std::cerr << "\nDone.\n";

@@ -21,8 +21,17 @@ using std::sqrt;
 #define PI 3.1415926535897932385
 
 /* UTILITY FUNCTIONS */
+// Convert degrees to radians
 inline double degrees_to_radians(double degrees) {
     return degrees * PI / 180.0;
+}
+// Clamps a value to a range (if value is outside range and lower than min, we take min; vice versa)
+inline double clamp(double x, double min, double max) {
+    if(x < min)
+        return min;
+    if(x > max)
+        return max;
+    return x;
 }
 
 /* IMAGE RESOLUTION */
