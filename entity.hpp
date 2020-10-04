@@ -1,9 +1,11 @@
 #ifndef entity_hpp
 #define entity_hpp
 
+#include "constants.hpp"
 #include "ray.hpp"
 
 
+// Let the compiler know the pointer in the struct is to a class
 class material;
 
 struct hit_record {
@@ -11,7 +13,10 @@ struct hit_record {
     point3 p;
     vec3 normal;
     bool front_face;
-    material* mat_ptr;
+    // Used to point at the material pointer an entity e.g. a sphere is given in the main
+    // When ray_color routine gets an entity's hit_record, it can call member functions of 
+    // the material pointer to figure out how to scatter the ray
+    shared_ptr<material> mat_ptr;
 
     // We have normals always point outward to determine which side of the 
     // surface the ray is coming from at geometry time (vs. always pointing 

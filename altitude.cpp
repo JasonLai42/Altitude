@@ -6,6 +6,7 @@
 #include "color.hpp"
 #include "entity_list.hpp"
 #include "sphere.hpp"
+#include "material.hpp"
 
 
 // Returns color of ray that passes through world and hits objects; depth limits recursive calls 
@@ -21,10 +22,13 @@ color3 ray_color(const ray& r, const entity& world, int depth) {
     // 0.001 to fix shadow acne; rays hitting objects not at t = 0 due to floating point 
     // approximation are ignored 
     if(world.hit(r, 0.001, INF, rec)) {
-        point3 target = operator+(
-                            operator+(rec.p, rec.normal), 
-                                                random_in_unit_sphere());
-        return operator*(ray_color(ray(rec.p, operator-(target, rec.p)), world, depth - 1), 0.5);
+        ray scattered;
+        color3 attenuation;
+
+        if(rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+            return attenuation * ray_color(scattered, world, depth - 1);
+
+        return color3(0, 0, 0);
     }
     vec3 unit_direction = unit_vector(r.get_direction());
     auto t = 0.5 * (unit_direction.get_y() + 1.0);
@@ -56,8 +60,16 @@ int main(int argc, char* argv[]) {
 
     /* WORLD */
     entity_list world;
-    world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
-    world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
+    
+    auto material_ground = make_shared<lambertian>(color3(0.8, 0.8, 0.0));
+    auto material_center = make_shared<lambertian>(color3(0.7, 0.3, 0.3));
+    auto material_left = make_shared<metal>(color3(0.8, 0.8, 0.8), 0.3);
+    auto material_right = make_shared<metal>(color3(0.8, 0.6, 0.2), 1.0);
+
+    world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
+    world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
 
 
     /* CAMERA */

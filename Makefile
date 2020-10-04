@@ -3,7 +3,7 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -O2 -Wall -g
 ALTITUDE_OBJ = altitude.o
-HEADER_FILES = camera.hpp color.hpp entity_list.hpp sphere.hpp #material.hpp
+HEADER_FILES = camera.hpp color.hpp entity_list.hpp sphere.hpp material.hpp
 
 #submission = 204995126.tar.gz
 #submission_files = client.cpp server.cpp $(HEADER_FILES) Makefile README

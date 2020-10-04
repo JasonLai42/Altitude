@@ -1,6 +1,7 @@
 #ifndef sphere_hpp
 #define sphere_hpp
 
+#include "constants.hpp"
 #include "vector3.hpp"
 #include "entity.hpp"
 
@@ -8,13 +9,14 @@
 class sphere : public entity {
     public:
         sphere() {}
-        sphere(point3 c, double r) : center(c), radius(r) {}
+        sphere(point3 c, double r, shared_ptr<material> m) 
+                : center(c), radius(r), mat_ptr(m) {}
 
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
         
         point3 center;
         double radius;
-        material* mat_ptr;
+        shared_ptr<material> mat_ptr;
 };
 
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
@@ -38,6 +40,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
             rec.p = r.point_at_parameter(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(r, outward_normal);
+            rec.mat_ptr = mat_ptr;
             return true;
         }
         
@@ -48,6 +51,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
             rec.p = r.point_at_parameter(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(r, outward_normal);
+            rec.mat_ptr = mat_ptr;
             return true;
         }
     }

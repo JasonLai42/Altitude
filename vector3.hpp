@@ -6,8 +6,6 @@
 #include "constants.hpp"
 
 
-using std::sqrt;
-
 class vec3 {
     public:
         vec3() : e{0, 0, 0} {}
@@ -197,6 +195,13 @@ vec3 random_in_hemisphere(const vec3& normal) {
         return in_unit_sphere;
     else
         return -in_unit_sphere;
+}
+
+/* Reflects rays off shiny (metal) surfaces. Reflected across normal unit vector; reflected 
+ * ray is b in height, where b = v dot n.
+ */
+vec3 reflect(const vec3& v, const vec3& n) {
+    return v - operator*(n, 2 * dot(v, n));
 }
 
 #endif
