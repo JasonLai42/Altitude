@@ -74,7 +74,12 @@ int main(int argc, char* argv[]) {
 
 
     /* CAMERA */
-    camera cam(point3(-2, 2, 1), point3(0, 0, -1), vec3(0, 1, 0), 20, ASPECT_RATIO);
+    point3 look_from(3, 3, 2);
+    point3 look_at(0, 0, -1);
+    vec3 vup(0, 1, 0);
+    auto dist_to_focus = (look_from - look_at).get_magnitude();
+    auto aperture = 2.0;
+    camera cam(look_from, look_at, vup, 20, ASPECT_RATIO, aperture, dist_to_focus);
 
 
     /* RENDER; WRITE TO FILE IN PPM FORMAT */
