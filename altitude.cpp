@@ -9,6 +9,54 @@
 #include "material.hpp"
 
 
+entity_list random_scene() {
+    entity_list world;
+
+    auto ground_material = make_shared<lambertian>(color3(0.5, 0.5, 0.5));
+    world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
+
+    for(int a = -11; a < 11; a++) {
+        for(int b = -11; b < 11; b++) {
+            auto choose_mat = random_double();
+            point3 center(a + (0.9 * random_double()), 0.2, b + (0.9 * random_double()));
+
+            if((center - point3(4, 0.2, 0)).get_magnitude() > 0.9) {
+                shared_ptr<material> sphere_material;
+
+                if(choose_mat < 0.8) {
+                    // Diffuse
+                    auto albedo = color3::random() * color3::random();
+                    sphere_material = make_shared<lambertian>(albedo);
+                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                }
+                else if(choose_mat < 0.95) {
+                    // Metal
+                    auto albedo = color3::random(0.5, 1);
+                    auto fuzz = random_double(0, 0.5);
+                    sphere_material = make_shared<metal>(albedo, fuzz);
+                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                }
+                else {
+                    // glass
+                    sphere_material = make_shared<dielectric>(1.5);
+                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                }
+            }
+        }
+    }
+
+    auto material_1 = make_shared<dielectric>(1.5);
+    world.add(make_shared<sphere>(point3(0, 1, 0), 1.0, material_1));
+
+    auto material_2 = make_shared<lambertian>(color3(0.4, 0.2, 0.1));
+    world.add(make_shared<sphere>(point3(-4, 1, 0), 1.0, material_2));
+
+    auto material_3 = make_shared<metal>(color3(0.7, 0.6, 0.5), 0.0);
+    world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material_3));
+
+    return world;
+}
+
 // Returns color of ray that passes through world and hits objects; depth limits recursive calls 
 // to prevent blowing the stack
 color3 ray_color(const ray& r, const entity& world, int depth) {
@@ -59,26 +107,16 @@ int main(int argc, char* argv[]) {
 
 
     /* WORLD */
-    entity_list world;
-    
-    auto material_ground = make_shared<lambertian>(color3(0.8, 0.8, 0.0));
-    auto material_center = make_shared<lambertian>(color3(0.1, 0.2, 0.5));
-    auto material_left   = make_shared<dielectric>(1.5);
-    auto material_right  = make_shared<metal>(color3(0.8, 0.6, 0.2), 0.0);
-
-    world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
-    world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
-    world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
-    world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0), -0.45, material_left));
-    world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
+    auto world = random_scene();
 
 
     /* CAMERA */
-    point3 look_from(3, 3, 2);
-    point3 look_at(0, 0, -1);
+    point3 look_from(13, 2, 3);
+    point3 look_at(0, 0, 0);
     vec3 vup(0, 1, 0);
-    auto dist_to_focus = (look_from - look_at).get_magnitude();
-    auto aperture = 2.0;
+    auto dist_to_focus = 10.0;
+    auto aperture = 0.1;
+
     camera cam(look_from, look_at, vup, 20, ASPECT_RATIO, aperture, dist_to_focus);
 
 

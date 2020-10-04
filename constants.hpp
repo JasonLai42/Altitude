@@ -22,12 +22,12 @@ pcg32 RNG;
 #define PI 3.1415926535897932385
 
 /* IMAGE RESOLUTION */
-#define ASPECT_RATIO (16.0 / 9.0)
+#define ASPECT_RATIO (3.0 / 2.0)
 #define IMG_WIDTH 1200
 #define IMG_HEIGHT (static_cast<int>(IMG_WIDTH / ASPECT_RATIO))
 
 /* IMAGE QUALITY */
-#define AA_SAMPLE 100
+#define AA_SAMPLE 500
 #define MAX_RAY_BOUNCE 50
 
 /* UTILITY FUNCTIONS */
