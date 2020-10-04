@@ -204,4 +204,20 @@ vec3 reflect(const vec3& v, const vec3& n) {
     return v - operator*(n, 2 * dot(v, n));
 }
 
+/* Calculate the refracted ray (through dielectric) according to Snell's Law nSin(0) = n'Sin(0').
+ * We have the angle 0' between the normal n' and refracted ray; we can split the refracted ray 
+ * into the components that are perpendicular to n' and parallel to n'. etai over etat = n/n'.
+ */
+vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat) {
+    auto cos_theta = dot(-uv, n);
+    vec3 r_out_perp = operator*(
+                            operator+(
+                                operator*(n, cos_theta), 
+                                                    uv), 
+                                                        etai_over_etat);
+    vec3 r_out_parallel = operator*(n, -sqrt(fabs(1.0 - r_out_perp.get_squared_magnitude())));
+
+    return operator+(r_out_perp, r_out_parallel);
+}
+
 #endif

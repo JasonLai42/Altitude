@@ -41,6 +41,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(r, outward_normal);
             rec.mat_ptr = mat_ptr;
+            
             return true;
         }
         
@@ -52,6 +53,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(r, outward_normal);
             rec.mat_ptr = mat_ptr;
+
             return true;
         }
     }
