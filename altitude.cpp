@@ -1,28 +1,30 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <random>
 
-#include "constants.hpp"
 #include "camera.hpp"
 #include "color.hpp"
 #include "entity_list.hpp"
 #include "sphere.hpp"
 
 
-// RNG for real number >= 0 and < 1
-inline double random_double() {
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    static std::mt19937 generator;
-    
-    return distribution(generator);
-}
-
-color3 ray_color(const ray& r, const entity& world) {
+// Returns color of ray that passes through world and hits objects; depth limits recursive calls 
+// to prevent blowing the stack
+color3 ray_color(const ray& r, const entity& world, int depth) {
     hit_record rec;
+
+    // If we've reached maximum allowed ray bounces, gather no more light
+    if(depth <= 0) 
+        return color3(0, 0, 0);
+
     // Check for hits
-    if(world.hit(r, 0, INF, rec)) {
-        return operator*(operator+(rec.normal, color3(1, 1, 1)), 0.5);
+    // 0.001 to fix shadow acne; rays hitting objects not at t = 0 due to floating point 
+    // approximation are ignored 
+    if(world.hit(r, 0.001, INF, rec)) {
+        point3 target = operator+(
+                            operator+(rec.p, rec.normal), 
+                                                random_in_unit_sphere());
+        return operator*(ray_color(ray(rec.p, operator-(target, rec.p)), world, depth - 1), 0.5);
     }
     vec3 unit_direction = unit_vector(r.get_direction());
     auto t = 0.5 * (unit_direction.get_y() + 1.0);
@@ -46,6 +48,10 @@ int main(int argc, char* argv[]) {
     // Open file for writing
     std::ofstream out_file;
     out_file.open(file_name, std::ios::out | std::ios::trunc);
+
+
+    /* SEED RNG */
+    rng.seed(42u, 0);
 
 
     /* WORLD */
@@ -72,7 +78,7 @@ int main(int argc, char* argv[]) {
                 auto v = (i + random_double()) / (IMG_HEIGHT - 1);
                 // Get the ray from camera to those UV coordinates
                 ray r = cam.get_ray(u, v);
-                pixel_color = operator+(pixel_color, ray_color(r, world));
+                pixel_color = operator+(pixel_color, ray_color(r, world, MAX_RAY_BOUNCE));
             }
             
             write_color(out_file, pixel_color, AA_SAMPLE);

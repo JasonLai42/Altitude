@@ -2,6 +2,8 @@
 #define camera_hpp
 
 #include "constants.hpp"
+#include "vector3.hpp"
+#include "ray.hpp"
 
 
 class camera {

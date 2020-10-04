@@ -6,10 +6,11 @@
 #include <limits>
 #include <memory>
 
-/* COMMON HEADERS */
-#include "vector3.hpp"
-#include "ray.hpp"
+#include "pcg32.hpp"
 
+
+/* FOR RNG PURPOSES */
+pcg32 rng;
 
 /* USINGS */
 using std::shared_ptr;
@@ -24,6 +25,13 @@ using std::sqrt;
 // Convert degrees to radians
 inline double degrees_to_radians(double degrees) {
     return degrees * PI / 180.0;
+}
+// RNG for real number >= 0 and < 1
+inline double random_double() {
+    return rng.nextDouble();
+}
+inline double random_double(double min, double max) {
+    return min + ((max - min) * rng.nextDouble());
 }
 // Clamps a value to a range (if value is outside range and lower than min, we take min; vice versa)
 inline double clamp(double x, double min, double max) {
@@ -46,5 +54,6 @@ inline double clamp(double x, double min, double max) {
 
 /* IMAGE QUALITY */
 #define AA_SAMPLE 100
+#define MAX_RAY_BOUNCE 50
 
 #endif

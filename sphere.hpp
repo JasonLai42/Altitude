@@ -1,8 +1,8 @@
 #ifndef sphere_hpp
 #define sphere_hpp
 
-#include "entity.hpp"
 #include "vector3.hpp"
+#include "entity.hpp"
 
 
 class sphere : public entity {

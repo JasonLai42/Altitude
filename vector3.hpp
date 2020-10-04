@@ -2,7 +2,8 @@
 #define vector3_hpp
 
 #include <iostream>
-#include <cmath>
+
+#include "constants.hpp"
 
 
 using std::sqrt;
@@ -38,6 +39,14 @@ class vec3 {
             return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
         }
         inline void make_unit_vector();
+
+        // Vec3 random utility functions; generate vectors (directions) with random params
+        inline static vec3 random() {
+            return vec3(random_double(), random_double(), random_double());
+        }
+        inline static vec3 random(double min, double max) {
+            return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+        }
 
         double e[3];
 };
@@ -149,6 +158,45 @@ inline std::istream& operator>>(std::istream &in, vec3 &v) {
 inline std::ostream& operator<<(std::ostream &out, const vec3 &v) {
     out << v.e[0] << " " << v.e[1] << " " << v.e[2];
     return out;
+}
+
+// See if random point is in unit sphere
+/* Used for Vassillen Chizhov Lambertian approximation of diffuse surfaces
+ * When ray strikes diffuse surface, we take the unit normal at the hit point and construct a 
+ * UNIT sphere that is tanget to surface at the hit point with center at tip of unit normal. 
+ * Pick a random point in this sphere, that is where the ray will bounce to off the hit point.
+ */
+vec3 random_in_unit_sphere() {
+    while(true) {
+        auto p = vec3::random(-1, 1);
+        if(p.get_squared_magnitude() >= 1)
+            continue;
+
+        return p;
+    }
+}
+
+/* Used for estimating True Lambertian Reflection, by picking points on the surface of the UNIT
+ * sphere tanget to the surface at the hit point with center at tip of unit normal. Reflected 
+ * rays will instead go to these points on the surface of the sphere.
+ */
+vec3 random_unit_vector() {
+    auto a = random_double(0, 2 * PI);
+    auto z = random_double(-1, 1);
+    auto r = sqrt(1 - (z * z));
+
+    return vec3(r * cos(a), r * sin(a), z);
+}
+
+/* Scatters rays from the hit point away with no dependence on the angle from the normal.
+ * Another way of doing diffuse surfaces, but rays can go anywhere.
+ */
+vec3 random_in_hemisphere(const vec3& normal) {
+    vec3 in_unit_sphere = random_in_unit_sphere();
+    if(dot(in_unit_sphere, normal) > 0.0) // In same hemisphere as the normal
+        return in_unit_sphere;
+    else
+        return -in_unit_sphere;
 }
 
 #endif
