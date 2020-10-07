@@ -130,6 +130,7 @@ int main(int argc, char* argv[]) {
             color3 pixel_color(0, 0, 0);
             // Anti-aliasing; get n samples in each pixel
             for(int s = 0; s < AA_SAMPLE; s++) {
+                // Get random sample from inside pixel
                 auto u = (j + random_double()) / (IMG_WIDTH - 1);
                 auto v = (i + random_double()) / (IMG_HEIGHT - 1);
                 // Get the ray from camera to those UV coordinates
