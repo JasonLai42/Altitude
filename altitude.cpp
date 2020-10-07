@@ -135,6 +135,9 @@ int main(int argc, char* argv[]) {
                 auto v = (i + random_double()) / (IMG_HEIGHT - 1);
                 // Get the ray from camera to those UV coordinates
                 ray r = cam.get_ray(u, v);
+                // After getting the ray from the camera, use ray_color to get ray's behavior in 
+                // world; i.e. what objects the ray hits. Returned ray color is then added to 
+                // pixel_color to color the pixel at this (i, j).
                 pixel_color = operator+(pixel_color, ray_color(r, world, MAX_RAY_BOUNCE));
             }
             
